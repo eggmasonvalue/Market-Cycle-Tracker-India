@@ -11,6 +11,10 @@ Turnover is displayed as a volume bar at the bottom of the chart.
 - Plots turnover as a bar chart at the bottom
 - Fetches data directly from NSE APIs
 
+## Value prop
+- ROE plot
+- Plot all metrics in a single graph including turnover
+  
 ## Setup
 
 1. Install Python 3.8+.
