@@ -1,32 +1,42 @@
-# NSE Index Ratio History
-This Streamlit app visualizes historical price, ratios(PE, PB, Dividend Yield and ROE) and turnover for NSE indices.
-It also helps in identifying where each ratio stands within their statistical measures historically.
+# NSE Indices Cycle Tracker Dashboard
 
-## Value proposition
-- Tracking the stage of sectors/market in their cycle. Using indices is the best approach for this since they're all market cap weighted and hence represent the state of the sector better
-- ROE plot
-- Plot all metrics in a single graph including turnover
+This Streamlit app visualizes and analyzes historical ratios for NSE indices, with advanced screening and interactive analysis features.
+
+## Value Proposition
+- ROE history
+- Uses indices' ratios to track cycles. This is the more appropriate way since most indices are market-cap weighted leading to more accurate representations of the state of the sector in its cycle
+- Track the cycles each sector/theme/any index is in with statistical measures like median/SD
+- Actionable ideas - screen for sectors/themes recovering from a downturn/disproportionately undervalued relative to history
+
+## Features
+
+- Interactive sidebar for selecting index group, index, date range
+- Metric selection: "Price" (Close Price) and "Ratios" (PB, PE, Dividend Yield, ROE)
+- Multi-metric plotting with separate y-axes
+- Indices-wide advanced reports with multi-ratio filtering and SD/trend filters
+- Feature-rich charts and tables
 
 ## Setup
+
 1. Install Python 3.8+.
 2. Install dependencies:
 
-    ```
+    ```bash
     pip install -r requirements.txt
     ```
 
 3. Run the app:
 
-    ```
-    streamlit run indexData.py
+    ```bash
+    streamlit run app.py
     ```
 
 ## Files
 
-- `indexData.py`: Main Streamlit app
+- `app.py`: Main Streamlit app
+- `niftyindicesscraper.py`: API functions for fetching index data
 
 ## Notes
-
-- Turnover bar date may not align with the index date perfectly due to NSE's reporting.
-- Click on any of the metrics in the legend to not see that line on the chart
-- price and ratio data is currently fetched daily leading to a 10y window. Will be updated to a slower periodicity to allow charting for longer periods
+- Click on any metric in the legend to hide/show that line on the chart.
+- NSE uses TTM for tPE ratio so ROE = PB/PE changes as and when companies report
+- Session state and reset button ensure persistent and intuitive report workflow.

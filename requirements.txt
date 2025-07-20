@@ -1,3 +1,5 @@
 streamlit
 plotly
-nse
+numpy
+pandas
+requests
