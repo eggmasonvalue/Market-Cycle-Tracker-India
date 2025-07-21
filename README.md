@@ -31,12 +31,8 @@ This Streamlit app visualizes and analyzes historical ratios for NSE indices, wi
     streamlit run app.py
     ```
 
-## Files
-
-- `app.py`: Main Streamlit app
-- `niftyindicesscraper.py`: API functions for fetching index data
-
 ## Notes
 - Click on any metric in the legend to hide/show that line on the chart.
-- NSE uses TTM for tPE ratio so ROE = PB/PE changes as and when companies report
+- NSE uses TTM for PE ratio so ROE changes as and when companies report
 - Session state and reset button ensure persistent and intuitive report workflow.
+- Trendlyne and other tools cover overlaying different indices' charts on top of one another
