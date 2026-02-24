@@ -168,8 +168,8 @@ def render_ratio_analysis(df: pd.DataFrame, metric: str):
         )
 
         # Add vertical line for current value
-        fig.add_vline(x=current_val, line_dash="dash", line_color=COLOR_DANGER, annotation_text="Current")
-        fig.add_vline(x=median_val, line_dash="dot", line_color=COLOR_PRIMARY, annotation_text="Median")
+        fig.add_vline(x=current_val, line_dash="dash", line_color=COLOR_DANGER, annotation_text="Current", annotation_position="top left")
+        fig.add_vline(x=median_val, line_dash="dot", line_color=COLOR_PRIMARY, annotation_text="Median", annotation_position="bottom right")
 
         fig.update_layout(showlegend=False, template="plotly_white")
         st.plotly_chart(fig, use_container_width=True)
@@ -211,58 +211,77 @@ def render_ratio_analysis(df: pd.DataFrame, metric: str):
         stats = series.describe()
         st.dataframe(stats.to_frame(), use_container_width=True)
 
-def render_screener(screener_df: pd.DataFrame):
+def render_screener_plots(screener_df: pd.DataFrame):
     """
-    Render the screener view with Heatmap/Scatter plot.
+    Render visual scatter plots for screening.
     """
     if screener_df.empty:
         st.warning("No data available for screening.")
         return
 
-    st.markdown("### Valuation vs Profitability Screener")
+    st.markdown("### Valuation vs Profitability Scanner")
 
-    # Scatter Plot: PE vs ROE
-    # Size by Market Cap (not available) -> maybe Div Yield?
-    # Color by Sub-Index Type or Trend?
+    col1, col2 = st.columns(2)
 
-    # Handle missing values
+    # Plot 1: PE vs ROE
     plot_df = screener_df.dropna(subset=["pe_latest", "roe_latest"])
-
-    if plot_df.empty:
-        st.warning("Not enough data for scatter plot.")
-    else:
-        fig = px.scatter(
+    if not plot_df.empty:
+        fig1 = px.scatter(
             plot_df,
             x="pe_latest",
             y="roe_latest",
-            size="div_yield_latest", # Bubble size
+            size="div_yield_latest",
             color="Subindex Type",
             hover_name="Index",
-            title="PE vs ROE (Size = Dividend Yield)",
+            title="PE vs ROE (Size = Div Yield)",
             labels={
-                "pe_latest": "P/E Ratio (Latest)",
-                "roe_latest": "ROE % (Latest)",
-                "div_yield_latest": "Div Yield %",
-                "Subindex Type": "Sector/Theme"
+                "pe_latest": "P/E Ratio",
+                "roe_latest": "ROE %",
+                "div_yield_latest": "Div Yield %"
             },
-            template="plotly_white",
-            height=600
+            template="plotly_white"
         )
-
-        # Add quadrants/median lines
         pe_median = plot_df["pe_latest"].median()
         roe_median = plot_df["roe_latest"].median()
+        fig1.add_vline(x=pe_median, line_dash="dot", line_color="grey")
+        fig1.add_hline(y=roe_median, line_dash="dot", line_color="grey")
+        col1.plotly_chart(fig1, use_container_width=True)
 
-        fig.add_vline(x=pe_median, line_dash="dot", line_color="grey", annotation_text="Median PE")
-        fig.add_hline(y=roe_median, line_dash="dot", line_color="grey", annotation_text="Median ROE")
+    # Plot 2: PB vs ROE
+    plot_df_pb = screener_df.dropna(subset=["pb_latest", "roe_latest"])
+    if not plot_df_pb.empty:
+        fig2 = px.scatter(
+            plot_df_pb,
+            x="pb_latest",
+            y="roe_latest",
+            size="div_yield_latest",
+            color="Subindex Type",
+            hover_name="Index",
+            title="PB vs ROE (Size = Div Yield)",
+            labels={
+                "pb_latest": "P/B Ratio",
+                "roe_latest": "ROE %",
+                "div_yield_latest": "Div Yield %"
+            },
+            template="plotly_white"
+        )
+        pb_median = plot_df_pb["pb_latest"].median()
+        roe_median_pb = plot_df_pb["roe_latest"].median()
+        fig2.add_vline(x=pb_median, line_dash="dot", line_color="grey")
+        fig2.add_hline(y=roe_median_pb, line_dash="dot", line_color="grey")
+        col2.plotly_chart(fig2, use_container_width=True)
 
-        st.plotly_chart(fig, use_container_width=True)
+def render_screener_table(screener_df: pd.DataFrame):
+    """
+    Render detailed data table for screening.
+    """
+    if screener_df.empty:
+        st.warning("No data available.")
+        return
 
     st.markdown("### Detailed Data")
 
-    # Format columns for display
     display_df = screener_df.copy()
-    numeric_cols = [c for c in display_df.columns if "latest" in c or "median" in c]
 
     st.dataframe(
         display_df,

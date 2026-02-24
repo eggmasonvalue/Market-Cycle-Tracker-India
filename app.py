@@ -5,7 +5,7 @@ from datetime import date, timedelta
 
 from src.data.client import get_subindex_types, get_indices, get_index_data
 from src.processing.analysis import process_index_data, calculate_stats, calculate_trend
-from src.ui.views import render_main_chart, render_metric_cards, render_ratio_analysis, render_screener
+from src.ui.views import render_main_chart, render_metric_cards, render_ratio_analysis, render_screener_plots, render_screener_table
 from src.ui.styles import load_css
 from src.utils.constants import DEFAULT_INDEX_GROUP, DATE_FMT_API
 
@@ -43,7 +43,14 @@ def main():
         st.divider()
 
         # Navigation
-        view_mode = st.radio("View Mode", ["Deep Dive", "Screener"], index=0)
+        view_mode = st.radio("View Mode", ["Deep Dive", "Market Scanner"], index=0)
+
+        # Scanner Options (Only if Market Scanner is selected)
+        scanner_option = None
+        if view_mode == "Market Scanner":
+            scanner_option = st.radio("Scanner Output", ["Visual Scanner (Plots)", "Detailed Table (Data)"])
+            if scanner_option == "Detailed Table (Data)":
+                st.warning("⚠️ Generating the table requires processing all indices and may take some time.")
 
         st.divider()
 
@@ -75,7 +82,7 @@ def main():
 
         else:
             # Screener settings
-            st.info("Screener analyzes all indices in the selected segment.")
+            st.info(f"Scanner will analyze {len(indices)} indices in the '{selected_subindex_type}' segment.")
             selected_index = None
             selected_metrics = []
 
@@ -118,11 +125,11 @@ def main():
         with tab4:
             render_ratio_analysis(df, "roe")
 
-    elif view_mode == "Screener":
-        st.subheader(f"Market Screener: {selected_subindex_type}")
+    elif view_mode == "Market Scanner":
+        st.subheader(f"Market Scanner: {selected_subindex_type}")
 
-        if st.button("Run Screener"):
-            with st.spinner(f"Analyzing {len(indices)} indices... This may take a moment."):
+        if st.button("Run Scanner"):
+            with st.spinner(f"Scanning {len(indices)} indices..."):
                 screener_data = []
                 start_str = from_date.strftime(DATE_FMT_API)
                 end_str = to_date.strftime(DATE_FMT_API)
@@ -131,17 +138,9 @@ def main():
                 progress_bar = st.progress(0)
 
                 for i, idx in enumerate(indices):
-                    # Fetch only necessary data (maybe only last year for efficiency?)
-                    # But user selected date range. stick to it.
-                    # Optimization: Maybe fetch shorter range if range is huge?
-                    # For accurate percentiles, we need history.
-
                     ratios_raw = get_index_data(idx, start_str, end_str, "P/E, P/B & Div.Yield values")
-                    # We might not need price for screener unless we want price trend
-                    # But let's keep it simple and skip price fetch for speed if only ratios needed
-                    # However, process_index_data expects price_data usually for dates?
-                    # process_index_data handles missing price data gracefully.
 
+                    # We process data to get stats
                     df = process_index_data([], ratios_raw)
 
                     if not df.empty:
@@ -176,7 +175,11 @@ def main():
                     progress_bar.progress((i + 1) / len(indices))
 
                 screener_df = pd.DataFrame(screener_data)
-                render_screener(screener_df)
+
+                if scanner_option == "Visual Scanner (Plots)":
+                    render_screener_plots(screener_df)
+                else:
+                    render_screener_table(screener_df)
 
 if __name__ == "__main__":
     main()
