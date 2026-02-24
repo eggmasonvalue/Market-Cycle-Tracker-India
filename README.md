@@ -1,4 +1,4 @@
-# NSE Indices Cycle Tracker Dashboard
+# India Market Cycle Tracker - Capital Cost vs Capital Efficiency
 
 This Streamlit app visualizes and analyzes historical ratios for NSE indices to identify market cycles and investment opportunities.
 
