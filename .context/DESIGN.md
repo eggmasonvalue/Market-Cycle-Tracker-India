@@ -9,6 +9,7 @@
 - [x] Metric summary cards (Current vs Median).
 - [x] Tabbed ratio analysis (PE, PB, Div Yield, ROE).
 - [x] Market Screener for segment-wide comparison.
+- [x] Robust error handling with retries and exponential backoff.
 
 ## Future Roadmap (Planned)
 - [ ] Add more sophisticated trend indicators (RSI, MA).
