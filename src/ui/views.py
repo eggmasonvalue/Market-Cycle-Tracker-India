@@ -214,6 +214,7 @@ def render_ratio_analysis(df: pd.DataFrame, metric: str):
 def render_screener_plots(screener_df: pd.DataFrame):
     """
     Render visual scatter plots for screening.
+    Displays Profitability (ROE) vs Valuation (PE/PB).
     """
     if screener_df.empty:
         st.warning("No data available for screening.")
@@ -221,55 +222,61 @@ def render_screener_plots(screener_df: pd.DataFrame):
 
     st.markdown("### Valuation vs Profitability Scanner")
 
-    col1, col2 = st.columns(2)
-
-    # Plot 1: PE vs ROE
+    # Plot 1: ROE (X) vs PE (Y)
     plot_df = screener_df.dropna(subset=["pe_latest", "roe_latest"])
     if not plot_df.empty:
         fig1 = px.scatter(
             plot_df,
-            x="pe_latest",
-            y="roe_latest",
+            x="roe_latest",
+            y="pe_latest",
             size="div_yield_latest",
             color="Subindex Type",
             hover_name="Index",
-            title="PE vs ROE (Size = Div Yield)",
+            title="P/E Ratio vs ROE (Size = Div Yield)",
             labels={
-                "pe_latest": "P/E Ratio",
-                "roe_latest": "ROE %",
+                "pe_latest": "P/E Ratio (Valuation)",
+                "roe_latest": "ROE % (Profitability)",
                 "div_yield_latest": "Div Yield %"
             },
-            template="plotly_white"
+            template="plotly_white",
+            height=500
         )
         pe_median = plot_df["pe_latest"].median()
         roe_median = plot_df["roe_latest"].median()
-        fig1.add_vline(x=pe_median, line_dash="dot", line_color="grey")
-        fig1.add_hline(y=roe_median, line_dash="dot", line_color="grey")
-        col1.plotly_chart(fig1, use_container_width=True)
+        # Horizontal line for median PE (Y)
+        fig1.add_hline(y=pe_median, line_dash="dot", line_color="grey", annotation_text="Median PE")
+        # Vertical line for median ROE (X)
+        fig1.add_vline(x=roe_median, line_dash="dot", line_color="grey", annotation_text="Median ROE")
+        st.plotly_chart(fig1, use_container_width=True)
 
-    # Plot 2: PB vs ROE
+    st.markdown("---")
+
+    # Plot 2: ROE (X) vs PB (Y)
     plot_df_pb = screener_df.dropna(subset=["pb_latest", "roe_latest"])
     if not plot_df_pb.empty:
         fig2 = px.scatter(
             plot_df_pb,
-            x="pb_latest",
-            y="roe_latest",
+            x="roe_latest",
+            y="pb_latest",
             size="div_yield_latest",
             color="Subindex Type",
             hover_name="Index",
-            title="PB vs ROE (Size = Div Yield)",
+            title="P/B Ratio vs ROE (Size = Div Yield)",
             labels={
-                "pb_latest": "P/B Ratio",
-                "roe_latest": "ROE %",
+                "pb_latest": "P/B Ratio (Valuation)",
+                "roe_latest": "ROE % (Profitability)",
                 "div_yield_latest": "Div Yield %"
             },
-            template="plotly_white"
+            template="plotly_white",
+            height=500
         )
         pb_median = plot_df_pb["pb_latest"].median()
         roe_median_pb = plot_df_pb["roe_latest"].median()
-        fig2.add_vline(x=pb_median, line_dash="dot", line_color="grey")
-        fig2.add_hline(y=roe_median_pb, line_dash="dot", line_color="grey")
-        col2.plotly_chart(fig2, use_container_width=True)
+        # Horizontal line for median PB (Y)
+        fig2.add_hline(y=pb_median, line_dash="dot", line_color="grey", annotation_text="Median PB")
+        # Vertical line for median ROE (X)
+        fig2.add_vline(x=roe_median_pb, line_dash="dot", line_color="grey", annotation_text="Median ROE")
+        st.plotly_chart(fig2, use_container_width=True)
 
 def render_screener_table(screener_df: pd.DataFrame):
     """
