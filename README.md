@@ -1,20 +1,13 @@
 # NSE Indices Cycle Tracker Dashboard
 
-This Streamlit app visualizes and analyzes historical ratios for NSE indices, with advanced screening and interactive analysis features.
-
-## Value Proposition
-- ROE history
-- Uses indices' ratios to track cycles. This is the more appropriate way since most indices are market-cap weighted leading to more accurate representations of the state of the sector in its cycle
-- Track the cycles each sector/theme/any index is in with statistical measures like median/SD
-- Actionable ideas - screen for sectors/themes recovering from a downturn/disproportionately undervalued relative to history
+This Streamlit app visualizes and analyzes historical ratios for NSE indices to identify market cycles and investment opportunities.
 
 ## Features
 
-- Interactive sidebar for selecting index group, index, date range
-- Metric selection: "Price" (Close Price) and "Ratios" (PB, PE, Dividend Yield, ROE)
-- Multi-metric plotting with separate y-axes
-- Indices-wide advanced reports with multi-ratio filtering and SD/trend filters
-- Feature-rich charts and tables
+- **Deep Dive**: Detailed analysis of a single index with interactive charts (Price, PE, PB, Dividend Yield, ROE).
+- **Cycle Analysis**: Historical distribution plots and current valuation zones.
+- **Screener**: Market-wide screener to compare valuation (PE) vs profitability (ROE) across sectors/themes.
+- **Data Source**: Fetches data directly from `niftyindices.com` (with caching).
 
 ## Setup
 
@@ -31,8 +24,14 @@ This Streamlit app visualizes and analyzes historical ratios for NSE indices, wi
     streamlit run app.py
     ```
 
-## Notes
-- Click on any metric in the legend to hide/show that line on the chart.
-- NSE uses TTM for PE ratio so ROE changes as and when companies report
-- Session state and reset button ensure persistent and intuitive report workflow.
-- Trendlyne and other tools cover overlaying different indices' charts on top of one another
+## Project Structure
+
+- `src/data`: Data fetching logic (API client).
+- `src/processing`: Data transformation and analysis.
+- `src/ui`: UI components and views.
+- `src/utils`: Constants and helpers.
+- `app.py`: Main application entry point.
+
+## Deployment
+
+Deploy directly to Streamlit Cloud. Ensure `requirements.txt` is present in the root.
