@@ -4,6 +4,8 @@ from datetime import datetime
 from typing import Dict, List, Optional, Union, Any
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 import streamlit as st
 
 # Setup logging
@@ -28,6 +30,18 @@ class NiftyIndicesClient:
 
     def __init__(self):
         self.session = requests.Session()
+
+        # Configure retries with exponential backoff
+        retries = Retry(
+            total=3,
+            backoff_factor=1,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=["GET", "POST"]
+        )
+        adapter = HTTPAdapter(max_retries=retries)
+        self.session.mount("https://", adapter)
+        self.session.mount("http://", adapter)
+
         self.session.headers.update(self.HEADERS)
 
     def _post(self, endpoint: str, payload: Dict[str, Any]) -> Any:

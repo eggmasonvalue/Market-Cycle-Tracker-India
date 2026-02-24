@@ -17,7 +17,7 @@ graph TD
 - `app.py`: Main entry point, sidebar configuration, routing between Deep Dive and Screener modes.
 
 ### `src/data/`
-- `client.py`: Handles all external data fetching logic, including index lists and historical price/ratio data.
+- `client.py`: Handles all external data fetching logic, including index lists and historical price/ratio data with automatic retries and exponential backoff.
 
 ### `src/processing/`
 - `analysis.py`: Data cleaning, merging price and ratio dataframes, and calculating statistical metrics (percentiles, z-scores, trends).
